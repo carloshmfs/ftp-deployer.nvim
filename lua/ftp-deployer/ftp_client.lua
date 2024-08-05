@@ -1,16 +1,10 @@
 local FtpClient = {}
 
-function FtpClient:new(config)
-    local self = setmetatable({}, FtpClient)
-    self.config = config or {}
-
-    return self
-end
-
 function FtpClient:download(file)
 end
 
 function FtpClient:upload(file)
+    local ftp = require("socket.ftp")
     print(file)
 end
 

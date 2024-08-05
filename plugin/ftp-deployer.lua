@@ -1,0 +1,2 @@
+require("ftp-deployer").setup()
+
