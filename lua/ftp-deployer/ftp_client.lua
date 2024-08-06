@@ -5,7 +5,7 @@ end
 
 function FtpClient:upload(file)
     local ftp = require("socket.ftp")
-    print(file)
+    print(ftp.get("ftp://test.rebex.net/readme.txt"))
 end
 
 function FtpClient:open_connection(file)
