@@ -3,32 +3,25 @@ local FtpClient = {}
 local ftp = require("socket.ftp")
 
 local config = {
-    host = "ftp://test.rebex.net",
-    user = "",
+    host = "ftp.127.0.0.1",
+    port = "2211",
+    user = "robott",
     password = "",
     base_path = "",
 }
 
-local function open_connection(file)
-end
-
-function FtpClient:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
-
 function FtpClient:download(file)
-    -- local path = config.path .. "/" .. file
+    local path = config.base_path .. "/artisan"
 
-    print(self, file)
+    local response, error = ftp.get({
+        host = config.host,
+        port = config.port,
+        user = config.user,
+        password = config.password,
+        path = path
+    })
 
-    -- local response = ftp.get({
-    --     host = config.host,
-    --     user = config.user,
-    --     password = config.password,
-    -- })
+    print(response, error)
 end
 
 function FtpClient:upload(self, file)
