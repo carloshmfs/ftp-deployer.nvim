@@ -7,11 +7,14 @@ local config = {
     port = "2211",
     user = "robott",
     password = "",
-    base_path = "",
+    base_remote_path = "",
+    base_local_path = "",
 }
 
 function FtpClient:download(file)
-    local path = config.base_path .. "/artisan"
+    local path = config.base_remote_path .. file
+
+    print(path)
 
     local response, error = ftp.get({
         host = config.host,
