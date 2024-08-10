@@ -27,6 +27,8 @@ function FtpClient:download(file)
     local config = get_config()
     local path = config.base_remote_path .. file
 
+    print(path)
+
     local result = {}
     local response, error = ftp.get({
         host = config.host,

@@ -7,8 +7,7 @@ function M:setup()
     vim.api.nvim_create_user_command("FtpDownload", function ()
         local Client = require("ftp-deployer.ftp_client")
 
-        -- Client:download(vim.fn.expand("%:."))
-        Client:download("test.php")
+        Client:download(vim.fn.expand("%:."))
 
     end, command_opts)
 end
