@@ -1,0 +1,9 @@
+{
+    "host": "localhost",
+    "port": "22",
+    "user": "guest",
+    "password": "password",
+    "base_remote_path": "/public/",
+    "base_local_path": ""
+}
+
