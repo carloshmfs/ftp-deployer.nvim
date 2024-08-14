@@ -3,6 +3,7 @@ local FtpClient = {}
 local ftp = require("socket.ftp")
 local ltn12 = require("ltn12")
 local json = require("libs.json")
+local utils = require("ftp-deployer.utils")
 
 local CONFIG_FILE_NAME = "ftp-deployer.json"
 
@@ -27,7 +28,7 @@ function FtpClient:download(file)
     local config = get_config()
     local path = config.base_remote_path .. file
 
-    print(path)
+    -- print(path)
 
     local result = {}
     local response, error = ftp.get({
@@ -39,14 +40,14 @@ function FtpClient:download(file)
         path = path
     })
 
-    print(response, error)
-
-    local file_contents = ""
+    local file_contents = {}
     for _, chunk in ipairs(result) do
-        file_contents = file_contents .. chunk
+        for line in chunk:gmatch("([^\r\n]*)\r?\n?") do
+            table.insert(file_contents, line)
+        end
     end
 
-    print(file_contents)
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, file_contents)
 end
 
 function FtpClient:upload(file)
