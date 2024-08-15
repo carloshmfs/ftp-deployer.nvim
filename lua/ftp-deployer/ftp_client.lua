@@ -3,7 +3,6 @@ local FtpClient = {}
 local ftp = require("socket.ftp")
 local ltn12 = require("ltn12")
 local json = require("libs.json")
-local utils = require("ftp-deployer.utils")
 
 local CONFIG_FILE_NAME = "ftp-deployer.json"
 
@@ -28,8 +27,6 @@ function FtpClient:download(file)
     local config = get_config()
     local path = config.base_remote_path .. file
 
-    -- print(path)
-
     local result = {}
     local response, error = ftp.get({
         host = config.host,
@@ -51,6 +48,19 @@ function FtpClient:download(file)
 end
 
 function FtpClient:upload(file)
+    local config = get_config()
+    local path = config.base_remote_path .. file
+
+    local response, error = ftp.get({
+        host = config.host,
+        port = config.port,
+        user = config.user,
+        password = config.password,
+        sink = ltn12.source.file(io.open(path, "r")),
+        command = "appe",
+    })
+
+    print(response, error)
 end
 
 return FtpClient

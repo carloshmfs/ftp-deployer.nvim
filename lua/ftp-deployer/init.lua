@@ -10,6 +10,13 @@ function M:setup()
         Client:download(vim.fn.expand("%:."))
 
     end, command_opts)
+
+    vim.api.nvim_create_user_command("FtpUpload", function ()
+        local Client = require("ftp-deployer.ftp_client")
+
+        Client:upload(vim.fn.expand("%:."))
+
+    end, command_opts)
 end
 
 return M
