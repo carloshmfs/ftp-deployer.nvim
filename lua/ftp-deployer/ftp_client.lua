@@ -20,11 +20,16 @@ local function get_config()
         file_contents = file_contents .. line
     end
 
-    return json.decode(file_contents)
+    return json.decode(file_contents) or nil
 end
 
 function FtpClient:download(file)
     local config = get_config()
+    if not config then
+        print("[FtpDeployer] ERROR: config file not found.")
+        return
+    end
+
     local path = config.base_remote_path .. file
 
     local result = {}
@@ -36,6 +41,11 @@ function FtpClient:download(file)
         password = config.password,
         path = path
     })
+
+    if not response then
+        print("[FtpDeployer] ERROR: " .. error)
+        return
+    end
 
     local file_contents = {}
     for _, chunk in ipairs(result) do
@@ -49,6 +59,11 @@ end
 
 function FtpClient:upload(file)
     local config = get_config()
+    if not config then
+        print("[FtpDeployer] ERROR: config file not found.")
+        return
+    end
+
     local path = config.base_remote_path .. file
 
     local response, error = ftp.get({
@@ -60,7 +75,10 @@ function FtpClient:upload(file)
         command = "appe",
     })
 
-    print(response, error)
+    if not response then
+        print("[FtpDeployer] ERROR: " .. error)
+        return
+    end
 end
 
 return FtpClient
