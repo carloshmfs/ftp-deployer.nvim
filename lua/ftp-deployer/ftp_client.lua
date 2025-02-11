@@ -1,7 +1,5 @@
 local FtpClient = {}
 
-local ftp = require("socket.ftp")
-local ltn12 = require("ltn12")
 local json = require("libs.json")
 
 local CONFIG_FILE_NAME = "ftp-deployer.json"
@@ -23,6 +21,15 @@ local function get_config()
     return json.decode(file_contents) or nil
 end
 
+local function spawn_lftp(cmd)
+    local config = get_config()
+
+    local lftp_cmd = "lftp -e 'set ssl:verify-certificate no; open ftp://" ..
+        config.user .. ":" .. config.password .. "@" .. config.host .. "; " .. cmd .. " '"
+
+    print(lftp_cmd)
+end
+
 function FtpClient:download(file)
     local config = get_config()
     if not config then
@@ -32,29 +39,7 @@ function FtpClient:download(file)
 
     local path = config.base_remote_path .. file
 
-    local result = {}
-    local response, error = ftp.get({
-        host = config.host,
-        sink = ltn12.sink.table(result),
-        port = config.port,
-        user = config.user,
-        password = config.password,
-        path = path
-    })
-
-    if not response then
-        print("[FtpDeployer] ERROR: " .. error)
-        return
-    end
-
-    local file_contents = {}
-    for _, chunk in ipairs(result) do
-        for line in chunk:gmatch("([^\r\n]*)\r?\n?") do
-            table.insert(file_contents, line)
-        end
-    end
-
-    vim.api.nvim_buf_set_lines(0, 0, -1, false, file_contents)
+    spawn_lftp()
 end
 
 function FtpClient:upload(file)
@@ -65,21 +50,6 @@ function FtpClient:upload(file)
     end
 
     local path = config.base_remote_path .. file
-
-    local response, error = ftp.get({
-        host = config.host,
-        port = config.port,
-        user = config.user,
-        password = config.password,
-        sink = ltn12.source.file(io.open(path, "r")),
-        command = "appe",
-    })
-
-    if not response then
-        print("[FtpDeployer] ERROR: " .. error)
-        return
-    end
 end
 
 return FtpClient
-
