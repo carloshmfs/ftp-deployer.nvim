@@ -1,6 +1,8 @@
 local FtpClient = {}
 
 local json = require("libs.json")
+local lftp = require("ftp-deployer.lftp")
+local config = require("ftp-deployer.config")
 
 local CONFIG_FILE_NAME = "ftp-deployer.json"
 
@@ -31,15 +33,12 @@ local function spawn_lftp(cmd)
 end
 
 function FtpClient:download(file)
-    local config = get_config()
-    if not config then
-        print("[FtpDeployer] ERROR: config file not found.")
-        return
-    end
+    config:new()
+    config:init()
 
-    local path = config.base_remote_path .. file
+    local lftp_ob = lftp.new(config.host, config.port, config.user, config.password)
 
-    spawn_lftp()
+    lftp_ob:get(config.base_remote_path .. "/" .. file)
 end
 
 function FtpClient:upload(file)
